@@ -4,6 +4,7 @@ public class ListaEncadeada<T> implements Iterable<T> {
 		private Node next;
 		private Node previous;
 		
+		//construtor tem que passar um valor
 		public Node(T value) {
 			data = value;
 		}
@@ -87,17 +88,22 @@ public class ListaEncadeada<T> implements Iterable<T> {
 	void append(T value) {
 		Node novo = new Node(value);
 		if (tail != null)
-			tail.next = novo;
-		else
+		{
+			novo.previous = tail;
+			tail.next = novo;			
+		}
+		else			
 			head = novo;
 		tail = novo;
 	}
 
 	void pushFront(T value) {
-		Node novo = new Node(value);
+		Node novo = new Node(value);		
 		novo.next = head;
 		if (head == null)
 			tail = novo;
+		else
+			head.previous = novo;
 		head = novo;
 	}
 	
