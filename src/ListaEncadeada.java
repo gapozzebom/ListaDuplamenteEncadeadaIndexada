@@ -1,8 +1,12 @@
+
+
 public class ListaEncadeada<T> implements Iterable<T> {
 	private class Node {
 		private T data;
+		public long level;
 		private Node next;
 		private Node previous;
+		public Node down;
 		
 		//construtor tem que passar um valor
 		public Node(T value) {
