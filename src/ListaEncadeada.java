@@ -1,18 +1,16 @@
 import java.util.Random;
 
-public class ListaEncadeada<T extends Comparable<T>, U> {
+public class ListaEncadeada<T extends Comparable<T>> {
 	
 	//classe nó
 	private class Node {
-    public T key;
-    public U value;
+    public T value;
     public long level;
 	public Node previous;
     public Node next;
     public Node down;
     
-    public Node(T key, U value, long level, Node next, Node down, Node previous) {
-      this.key = key;
+    public Node(T value, long level, Node next, Node down, Node previous) {
       this.value = value;
       this.level = level;
       this.next = next;
@@ -38,19 +36,19 @@ public class ListaEncadeada<T extends Comparable<T>, U> {
   
   //construtor
   public ListaEncadeada() {
-    _head = new Node(null, null, 0, null, null, null);
+    _head = new Node( null, 0, null, null, null);
     _random = new Random();
     _size = 0;
     _p = 0.5;
   }
   
   //função que adiciona um item a estrutura
-  public void add(T key, U value) {
+  public void add(T value) {
     //gera o número de níveis do elemento
 	long level = _level();
 	//se o nivel gerado for maior que o nível do head, será adicionado mais um nível no head
     if (level > _head.level) {
-      _head = new Node(null, null, level, null, _head, null);
+      _head = new Node( null, level, null, _head, null);
     }
     
     Node cur = _head;
@@ -58,9 +56,9 @@ public class ListaEncadeada<T extends Comparable<T>, U> {
     
 	//navega na lista e insere o valor de forma ordenada
     while (cur != null) {
-      if (cur.next == null || cur.next.key.compareTo(key) > 0) {
+      if (cur.next == null || cur.next.value.compareTo(value) > 0) {
         if (level >= cur.level) {
-          Node n = new Node(key, value, cur.level, cur.next, null, cur);
+          Node n = new Node( value, cur.level, cur.next, null, cur);
           if (last != null) {
             last.down = n;
           }
@@ -71,7 +69,7 @@ public class ListaEncadeada<T extends Comparable<T>, U> {
         
         cur = cur.down;
         continue;
-      } else if (cur.next.key.equals(key)) {
+      } else if (cur.next.value.equals(value)) {
         cur.next.value = value;
         return;
       }
@@ -83,19 +81,19 @@ public class ListaEncadeada<T extends Comparable<T>, U> {
   }
   
   //verifica se existe valor no index passado
-  public boolean containsKey(T key) {
-    return get(key) != null;
+  public boolean containsKey(T value) {
+    return get(value) != null;
   }
   
   //função que remove o valor do index passado
-  public U remove(T key) {
-    U value = null;
+  public T remove(T key) {
+    T value = null;
     
     Node cur = _head;
 	//navega pela lista até encontrar um valor >= ao passado
     while (cur != null) {
-      if (cur.next == null || cur.next.key.compareTo(key) >= 0) {
-        if (cur.next != null && cur.next.key.equals(key)) {
+      if (cur.next == null || cur.next.value.compareTo(value) >= 0) {
+        if (cur.next != null && cur.next.value.equals(value)) {
           value = cur.next.value;
           cur.next = cur.next.next;
         }
@@ -112,13 +110,13 @@ public class ListaEncadeada<T extends Comparable<T>, U> {
   }
   
   //função que retorna o valor associado ao index
-  public U get(T key) {
+  public T get(T key) {
     Node cur = _head;
     while (cur != null) {
-      if (cur.next == null || cur.next.key.compareTo(key) > 0) {
+      if (cur.next == null || cur.next.value.compareTo(key) > 0) {
         cur = cur.down;
         continue;
-      } else if (cur.next.key.equals(key)) {
+      } else if (cur.next.value.equals(key)) {
         return cur.next.value;
       }
       
@@ -127,4 +125,6 @@ public class ListaEncadeada<T extends Comparable<T>, U> {
     
     return null;
   }
+  
+
 }
