@@ -1,124 +1,130 @@
+import java.util.Random;
 
-
-public class ListaEncadeada<T> implements Iterable<T> {
+public class ListaEncadeada<T extends Comparable<T>, U> {
+	
+	//classe nó
 	private class Node {
-		private T data;
-		public long level;
-		private Node next;
-		private Node previous;
-		public Node down;
-		
-		//construtor tem que passar um valor
-		public Node(T value) {
-			data = value;
-		}
-	}
-	
-	private class ListIterator implements Iterador<T> {
-		private Node current = null;
-		private Node previous = null;
-		
-		
-		@Override
-		public boolean hasNext() {
-			if (current == null)
-				return head != null;
-			return current.next != null;
-		}
-		@Override
-		public T next() {
-			if (!hasNext())
-				throw new IllegalStateException("Sem next!");
-			
-			if (current == null) {
-				current = head;
-			} else {
-				previous = current;
-				current = current.next;
-			}
-			return current.data;
-		}
-		@Override
-		public void remove() {
-			if (current == null) {
-				throw new IllegalStateException("Use next()!");
-			}
-			Node next = current.next;
-			
-			if (previous == null) {
-				head = next;
-			} else {
-				previous.next = next;
-			}
-			if (next == null) {
-				tail = previous;
-			}
-		}
-		@Override
-		public void append(T dado) {
-			if (current == null) {
-				throw new IllegalStateException("Use next()!");
-			}
-			
-			Node node = new Node(dado);
-			Node next = current.next;
-			
-			node.next = next;
-			current.next = node;
-			
-			if (current == tail) {
-				tail = node;
-			}
-		}
-		@Override
-		public void insert(T dado) {
-			if (current == null) {
-				throw new IllegalStateException("Use next()!");
-			}
-			
-			Node node = new Node(dado);
-			
-			node.next = current;
-			if (previous != null)
-				previous.next = node;
-			else {
-				head = node;
-			}
-		}
-	}
-	
-	private Node head;
-	private Node tail;
-
-	void append(T value) {
-		Node novo = new Node(value);
-		if (tail != null)
-		{
-			novo.previous = tail;
-			tail.next = novo;			
-		}
-		else			
-			head = novo;
-		tail = novo;
-	}
-
-	void pushFront(T value) {
-		Node novo = new Node(value);		
-		novo.next = head;
-		if (head == null)
-			tail = novo;
-		else
-			head.previous = novo;
-		head = novo;
-	}
-	
-	public Iterador<T> iterator() {
-		return new ListIterator();
-	}
+    public T key;
+    public U value;
+    public long level;
+	public Node previous;
+    public Node next;
+    public Node down;
+    
+    public Node(T key, U value, long level, Node next, Node down, Node previous) {
+      this.key = key;
+      this.value = value;
+      this.level = level;
+      this.next = next;
+      this.down = down;
+	  this.previous = previous;
+    }
+  }
+  
+  private Node _head;
+  private Random _random;
+  private long _size;
+  private double _p;
+  
+  //a função tem 50% de chance de criar mais um nível na estrutura, mas não pode ter mais níveis que o tamanho da lista
+  private long _level() {
+    long level = 0;
+    while (level <= _size && _random.nextDouble() < _p) {
+      level++;
+    }
+    
+    return level;
+  }
+  
+  //construtor
+  public ListaEncadeada() {
+    _head = new Node(null, null, 0, null, null, null);
+    _random = new Random();
+    _size = 0;
+    _p = 0.5;
+  }
+  
+  //função que adiciona um item a estrutura
+  public void add(T key, U value) {
+    //gera o número de níveis do elemento
+	long level = _level();
+	//se o nivel gerado for maior que o nível do head, será adicionado mais um nível no head
+    if (level > _head.level) {
+      _head = new Node(null, null, level, null, _head, null);
+    }
+    
+    Node cur = _head;
+    Node last = null;
+    
+	//navega na lista e insere o valor de forma ordenada
+    while (cur != null) {
+      if (cur.next == null || cur.next.key.compareTo(key) > 0) {
+        if (level >= cur.level) {
+          Node n = new Node(key, value, cur.level, cur.next, null, cur);
+          if (last != null) {
+            last.down = n;
+          }
+          
+          cur.next = n;
+          last = n;
+        }
+        
+        cur = cur.down;
+        continue;
+      } else if (cur.next.key.equals(key)) {
+        cur.next.value = value;
+        return;
+      }
+      
+      cur = cur.next;
+    }
+    //aumenta o tamanho da lista
+    _size++;
+  }
+  
+  //verifica se existe valor no index passado
+  public boolean containsKey(T key) {
+    return get(key) != null;
+  }
+  
+  //função que remove o valor do index passado
+  public U remove(T key) {
+    U value = null;
+    
+    Node cur = _head;
+	//navega pela lista até encontrar um valor >= ao passado
+    while (cur != null) {
+      if (cur.next == null || cur.next.key.compareTo(key) >= 0) {
+        if (cur.next != null && cur.next.key.equals(key)) {
+          value = cur.next.value;
+          cur.next = cur.next.next;
+        }
+        
+        cur = cur.down;
+        continue;
+      }
+      
+      cur = cur.next;
+    }
+    //reduz o tamanho da lista
+    _size--;
+    return value;
+  }
+  
+  //função que retorna o valor associado ao index
+  public U get(T key) {
+    Node cur = _head;
+    while (cur != null) {
+      if (cur.next == null || cur.next.key.compareTo(key) > 0) {
+        cur = cur.down;
+        continue;
+      } else if (cur.next.key.equals(key)) {
+        return cur.next.value;
+      }
+      
+      cur = cur.next;
+    }
+    
+    return null;
+  }
 }
-
-
-
-
-
-
