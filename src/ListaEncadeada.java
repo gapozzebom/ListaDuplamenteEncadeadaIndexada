@@ -14,6 +14,7 @@ public class ListaEncadeada<T> implements Iterable<T> {
 		private Node current = null;
 		private Node previous = null;
 		
+		
 		@Override
 		public boolean hasNext() {
 			if (current == null)
