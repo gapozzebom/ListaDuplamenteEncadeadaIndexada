@@ -7,15 +7,17 @@ public class SkipList<T extends Comparable<T>, U> {
     public T key;
     public U value;
     public long level;
+	public Node previous;
     public Node next;
     public Node down;
     
-    public Node(T key, U value, long level, Node next, Node down) {
+    public Node(T key, U value, long level, Node next, Node down, Node previous) {
       this.key = key;
       this.value = value;
       this.level = level;
       this.next = next;
       this.down = down;
+	  this.previous = previous;
     }
   }
   
@@ -36,7 +38,7 @@ public class SkipList<T extends Comparable<T>, U> {
   
   //construtor
   public SkipList() {
-    _head = new Node(null, null, 0, null, null);
+    _head = new Node(null, null, 0, null, null, null);
     _random = new Random();
     _size = 0;
     _p = 0.5;
@@ -48,7 +50,7 @@ public class SkipList<T extends Comparable<T>, U> {
 	long level = _level();
 	//se o nivel gerado for maior que o nível do head, será adicionado mais um nível no head
     if (level > _head.level) {
-      _head = new Node(null, null, level, null, _head);
+      _head = new Node(null, null, level, null, _head, null);
     }
     
     Node cur = _head;
